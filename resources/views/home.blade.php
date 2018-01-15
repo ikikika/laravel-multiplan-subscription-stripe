@@ -43,8 +43,8 @@
       @for($i = 0; $i < count($subscribed_plans); $i++)
       <form action="{{ route('cancelSubscription') }}" method="post">
         {{ csrf_field() }}
-        <input type="hidden" name="sub_id" value="{{$subscribed_plans[$i]->id}}" />
-        <button class="btn btn-danger">Cancel {{ $subscribed_plans[$i]->plan->name }}</button>
+        <input type="hidden" name="sub_id" value="{{$subscribed_plans[$i]->sub_item_id}}" />
+        <button class="btn btn-danger">Cancel {{ $subscribed_plans[$i]->stripe_plan }}</button>
       </form>
 
       @endfor

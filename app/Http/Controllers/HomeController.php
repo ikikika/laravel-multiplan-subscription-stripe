@@ -47,11 +47,13 @@ class HomeController extends Controller
 
          //return view('home', compact('plans', 'is_subscribed', 'subscription'));
 
-         $subscribed = \Stripe\Customer::all()->data[0]->subscriptions->data[0]->items->data;
 
-         //dd($subscribed);
 
-         return view('home')->with('allplans', $plans)->with('subscribed_plans', $subscribed);
+
+
+        //dd($subscribed_plans);
+
+         return view('home')->with('allplans', $plans)->with('subscribed_plans', $subscribed_plans);
 
 
 

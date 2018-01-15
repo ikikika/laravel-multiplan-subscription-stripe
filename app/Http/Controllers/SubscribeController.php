@@ -112,17 +112,20 @@ class SubscribeController extends Controller
       "items" => $plans
     ));
 
-    foreach( $selected_plans as $selected_plan){
+    $sub_items = $subscription->items->data;
+
+    for( $i = 0; $i < count( $sub_items ); $i++ ){
       $sub = new Subscription;
       $sub->user_id = Auth::user()->id;
       $sub->stripe_id = $subscription->id;
-      $sub->stripe_plan = $selected_plan;
+      $sub->stripe_plan = $sub_items[$i]->plan->id;
+      $sub->sub_item_id = $sub_items[$i]->id;
       $sub->ends_at = date('Y-m-d H:i:s', $subscription->current_period_end);
       $sub->quantity = 1;
       $sub->save();
     }
 
-    dd($subscription);
+    dd($sub_items);
 
   }
 
@@ -135,7 +138,7 @@ class SubscribeController extends Controller
     //$subscription = \Stripe\Subscription::retrieve($sub_id);
     $result = $subscription->delete();
 
-    return view('home');
+    return back();
   }
 
 
