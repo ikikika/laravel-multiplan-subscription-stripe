@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth']], function(){
         Route::post('/', 'SubscribeController@subscribe')->name('subscribe');
         Route::post('/cancel', 'SubscribeController@cancelSubscription')->name('cancelSubscription');
         //Route::post('/cancel', 'PlanController@cancelSubscription')->name('subscriptionCancel');
-        //Route::post('/resume', 'PlanController@resumeSubscription')->name('subscriptionResume');
+        Route::post('/resume', 'SubscribeController@resumeSubscription')->name('subscriptionResume');
 
         //Route::get('/invoices', 'InvoiceController@index')->name('invoices');
         //Route::get('/invoice/{id}', 'InvoiceController@download')->name('downloadInvoice');

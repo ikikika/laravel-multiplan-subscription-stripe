@@ -150,6 +150,7 @@ class SubscribeController extends Controller
       $subscribed_item_db->ends_at = $end_date;
       $subscribed_item_db->save();
 
+      $plan_name = $subscribed_item_db->stripe_plan;
       $result = $subscription->cancel(['at_period_end' => true]);
 
     } else {
@@ -159,12 +160,59 @@ class SubscribeController extends Controller
       $subscribed_item_db->ends_at = $end_date;
       $subscribed_item_db->save();
 
+      $plan_name = $subscribed_item_db->stripe_plan;
       $result = $sub_item->delete(['prorate' => true]);
+    }
+
+    //dd( count($sub->items->data));
+    return redirect()->route('home')->with('status', 'plan '.$plan_name.' cancelled.');
+  }
+
+  public function resumeSubscription(Request $request)
+  {
+    $sub_id = $request->input('sub_id');
+    $sub_item_id = $request->input('sub_item_id');
+
+    $subscribed_item_db = subscription::where('sub_item_id',  $sub_item_id )->first();
+
+    $stripe = new \Stripe\Stripe();
+    $stripe->setApiKey(env('STRIPE_SECRET'));
+    $subscription = \Stripe\Subscription::retrieve($sub_id);
+
+    $go = true;
+
+    if( count($subscription->items->data) == 1 && $subscription->cancel_at_period_end ){ //no existing sub, cancel at end
+
+
+    } else if( count($subscription->items->data) == 1 && !$subscription->cancel_at_period_end ){ //existing sub, not cancel at end date
+
+
+
+    } else {
+
+      $sub_items_arr = [];
+      foreach( $subscription->items->data as $sub_item ){
+        array_push($sub_items_arr, [
+          'id' => $sub_item->id,
+          'quantity' => $sub_item->quantity
+        ]);
+      }
+
+      array_push($sub_items_arr, [
+        'plan' => $subscribed_item_db->stripe_plan,
+        'quantity' => '1'
+      ]);
+
+      $subscription->items = $sub_items_arr;
+      $subscription->save();
+
+      $subscribed_item_db->sub_item_id = end($subscription->items->data)->id;
+      $subscribed_item_db->ends_at = NULL;
+      $subscribed_item_db->save();
 
 
     }
 
-    //dd( count($sub->items->data));
     return back();
   }
 

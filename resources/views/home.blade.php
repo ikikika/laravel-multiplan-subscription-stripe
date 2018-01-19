@@ -63,6 +63,13 @@
                   <input type="hidden" name="sub_id" value="{{$subscribed_plans[0]->stripe_id}}" />
                   <button class="btn btn-danger">Cancel </button>
                 </form>
+              @else
+              <form action="{{ route('subscriptionResume') }}" method="post">
+                {{ csrf_field() }}
+                <input type="hidden" name="sub_item_id" value="{{$subscribed_plans[$i]->sub_item_id}}" />
+                <input type="hidden" name="sub_id" value="{{$subscribed_plans[0]->stripe_id}}" />
+                <button class="btn btn-info">Resume </button>
+              </form>
               @endif
 
 
