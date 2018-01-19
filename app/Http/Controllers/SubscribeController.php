@@ -39,7 +39,8 @@ class SubscribeController extends Controller
       }));
   }
 
-  public function subscribe(Request $request){
+  public function subscribe(Request $request)
+  {
 
     $email = Auth::user()->email;
 
@@ -58,7 +59,8 @@ class SubscribeController extends Controller
 
   }
 
-  public function registerUser($email, $stripeToken) {
+  public function registerUser($email, $stripeToken)
+  {
 
     $customer = $this->registerUserOnStripe($email, $stripeToken); /// here we are getting customer id given by stripe
 
@@ -77,7 +79,8 @@ class SubscribeController extends Controller
   }
 
   // function to register user on stripe
-  public function registerUserOnStripe($email, $stripeToken) {
+  public function registerUserOnStripe($email, $stripeToken)
+  {
     try {
       $stripe = new \Stripe\Stripe();
       $stripe->setApiKey(env('STRIPE_SECRET')); // secret key provided by stripe
@@ -126,7 +129,7 @@ class SubscribeController extends Controller
       $sub->save();
     }
 
-    dd($sub_items);
+    //dd($sub_items);
 
   }
 
@@ -138,33 +141,31 @@ class SubscribeController extends Controller
     $stripe = new \Stripe\Stripe();
     $stripe->setApiKey(env('STRIPE_SECRET'));
     //$sub_item = \Stripe\SubscriptionItem::retrieve($sub_item_id);
-    $sub = \Stripe\Subscription::retrieve($sub_id);
+    $subscription = \Stripe\Subscription::retrieve($sub_id);
+    $end_date = date('Y-m-d H:i:s', $subscription->current_period_end);
 
-    //dd($sub);
+    if( count($subscription->items->data) == 1 ){
 
-    //$subscription = \Stripe\Subscription::retrieve($sub_id);
-    //$result = $sub_item->delete();
-    if( count($sub->items->data) == 1 ){
-      $subscription = \Stripe\Subscription::retrieve($sub_id);
-      //$result = $subscription->cancel();
+      $subscribed_item_db = subscription::where('sub_item_id',  $sub_item_id )->first();
+      $subscribed_item_db->ends_at = $end_date;
+      $subscribed_item_db->save();
 
-      $subscribed_item_db = subscription::where('stripe_id',  $sub_id );
-
-      dd($subscribed_item_db);
+      $result = $subscription->cancel(['at_period_end' => true]);
 
     } else {
+      $sub_item = \Stripe\SubscriptionItem::retrieve($sub_item_id);
 
-      $subscribed_item_db = subscription::where('stripe_id',  $sub_id );
+      $subscribed_item_db = subscription::where('sub_item_id',  $sub_item_id )->first();
+      $subscribed_item_db->ends_at = $end_date;
+      $subscribed_item_db->save();
 
-      dd($subscribed_item_db);
+      $result = $sub_item->delete(['prorate' => true]);
 
-      $subscription = \Stripe\Subscription::retrieve($sub_id);
-      //$result = $sub_item->delete();
 
     }
 
     //dd( count($sub->items->data));
-    //return back();
+    return back();
   }
 
 

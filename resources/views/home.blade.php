@@ -53,15 +53,19 @@
               {{ $subscribed_plans[$i]->stripe_plan }}
             </td>
             <td>
-              {{ $subscribed_plans[0]->ends_at }}
+              {{ $subscribed_plans[$i]->ends_at }}
             </td>
             <td>
-              <form action="{{ route('cancelSubscription') }}" method="post">
-                {{ csrf_field() }}
-                <input type="hidden" name="sub_item_id" value="{{$subscribed_plans[$i]->sub_item_id}}" />
-                <input type="hidden" name="sub_id" value="{{$subscribed_plans[0]->stripe_id}}" />
-                <button class="btn btn-danger">Cancel </button>
-              </form>
+              @if( !$subscribed_plans[$i]->ends_at )
+                <form action="{{ route('cancelSubscription') }}" method="post">
+                  {{ csrf_field() }}
+                  <input type="hidden" name="sub_item_id" value="{{$subscribed_plans[$i]->sub_item_id}}" />
+                  <input type="hidden" name="sub_id" value="{{$subscribed_plans[0]->stripe_id}}" />
+                  <button class="btn btn-danger">Cancel </button>
+                </form>
+              @endif
+
+
             </td>
           </tr>
           @endfor
