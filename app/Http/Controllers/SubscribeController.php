@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 use App\User;
 use App\Subscription;
@@ -120,7 +121,7 @@ class SubscribeController extends Controller
       $sub->stripe_id = $subscription->id;
       $sub->stripe_plan = $sub_items[$i]->plan->id;
       $sub->sub_item_id = $sub_items[$i]->id;
-      $sub->ends_at = date('Y-m-d H:i:s', $subscription->current_period_end);
+      //$sub->ends_at = date('Y-m-d H:i:s', $subscription->current_period_end);
       $sub->quantity = 1;
       $sub->save();
     }
@@ -130,15 +131,40 @@ class SubscribeController extends Controller
   }
 
   public function cancelSubscription(Request $request){
+
+    $sub_item_id = $request->input('sub_item_id');
     $sub_id = $request->input('sub_id');
+
     $stripe = new \Stripe\Stripe();
     $stripe->setApiKey(env('STRIPE_SECRET'));
-    $subscription = \Stripe\SubscriptionItem::retrieve($sub_id);
-    //dd($subscription);
-    //$subscription = \Stripe\Subscription::retrieve($sub_id);
-    $result = $subscription->delete();
+    //$sub_item = \Stripe\SubscriptionItem::retrieve($sub_item_id);
+    $sub = \Stripe\Subscription::retrieve($sub_id);
 
-    return back();
+    //dd($sub);
+
+    //$subscription = \Stripe\Subscription::retrieve($sub_id);
+    //$result = $sub_item->delete();
+    if( count($sub->items->data) == 1 ){
+      $subscription = \Stripe\Subscription::retrieve($sub_id);
+      //$result = $subscription->cancel();
+
+      $subscribed_item_db = subscription::where('stripe_id',  $sub_id );
+
+      dd($subscribed_item_db);
+
+    } else {
+
+      $subscribed_item_db = subscription::where('stripe_id',  $sub_id );
+
+      dd($subscribed_item_db);
+
+      $subscription = \Stripe\Subscription::retrieve($sub_id);
+      //$result = $sub_item->delete();
+
+    }
+
+    //dd( count($sub->items->data));
+    //return back();
   }
 
 
