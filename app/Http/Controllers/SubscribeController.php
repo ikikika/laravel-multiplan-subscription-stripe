@@ -179,16 +179,16 @@ class SubscribeController extends Controller
     $stripe->setApiKey(env('STRIPE_SECRET'));
     $subscription = \Stripe\Subscription::retrieve($sub_id);
 
-    $go = true;
 
     if( count($subscription->items->data) == 1 && $subscription->cancel_at_period_end ){ //no existing sub, cancel at end
+      // all resume button visible
+      //same sub id
+      //change name of plan to plan selected to resume,
+      //remove cancel at end
+      //update sub item id of plan
 
 
-    } else if( count($subscription->items->data) == 1 && !$subscription->cancel_at_period_end ){ //existing sub, not cancel at end date
-
-
-
-    } else {
+    } else if( ( count($subscription->items->data) == 1 && !$subscription->cancel_at_period_end ) || count($subscription->items->data) > 1 ) {
 
       $sub_items_arr = [];
       foreach( $subscription->items->data as $sub_item ){
@@ -213,7 +213,7 @@ class SubscribeController extends Controller
 
     }
 
-    return back();
+    return redirect()->route('home')->with('status', 'plan '.$subscribed_item_db->stripe_plan.' resumed.');
   }
 
 
