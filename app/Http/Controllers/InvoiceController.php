@@ -24,8 +24,12 @@ class InvoiceController extends Controller
   }
 
   public function show( $id ){
+    $stripe = new \Stripe\Stripe();
+    $stripe->setApiKey(env('STRIPE_SECRET'));
+    $invoice = \Stripe\Invoice::retrieve($id);
+    //dd($invoice);
 
-    return view('invoice_detail');
+    return view('invoice_detail', compact('invoice'));
   }
 
 }

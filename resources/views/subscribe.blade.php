@@ -45,7 +45,7 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-6">
-       SGD {{ $cost }}
+       Total: SGD {{ $cost }}
 
 
       <form action="{{ route('subscribe') }}" method="POST" id="payment-form" >
@@ -53,7 +53,7 @@
         {{ csrf_field() }}
 
         @foreach( $selected_plans as $plan )
-          <input type="text" name="plan[]" value="{{ $plan }}" />
+          <input type="hidden" name="plan[]" value="{{ $plan }}" />
         @endforeach
 
 

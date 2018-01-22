@@ -24,7 +24,7 @@
                                 <tr>
                                     <td>{{ date('Y-m-d', $invoice->date) }}</td>
                                     <td>$ {{ ($invoice->total)/100 }}</td>
-                                    <td><a href="{{ route('invoice_detail', $invoice->id) }}">Download</a></td>
+                                    <td><a target="_blank" href="{{ route('invoice_detail', $invoice->id) }}">Download</a></td>
                                 </tr>
                             @endforeach
 
