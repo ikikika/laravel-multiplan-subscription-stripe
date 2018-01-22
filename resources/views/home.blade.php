@@ -1,5 +1,50 @@
 @extends('layouts.app')
 
+@section('css')
+<style>
+
+div label input {
+   margin-right:100px;
+}
+body {
+    font-family:sans-serif;
+}
+
+#ck-button {
+    margin:4px;
+    background-color:#EFEFEF;
+    border-radius:4px;
+    border:1px solid #D0D0D0;
+    overflow:auto;
+    float:left;
+}
+
+#ck-button label {
+    float:left;
+    width:4.0em;
+    padding:0px;
+}
+
+#ck-button label span {
+    text-align:center;
+    padding:3px 0px;
+    display:block;
+}
+
+#ck-button label input {
+    position:absolute;
+    top:-20px;
+}
+
+#ck-button input:checked + span {
+    background-color:#911;
+    color:#fff;
+}
+
+</style>
+
+@endsection
+
 @section('content')
 
 
@@ -20,14 +65,36 @@
 
       <form action="{{ route('payment') }}" method="post" >
         {{ csrf_field() }}
+      <table class="table">
+        <thead>
+          <th>Plan</th>
+          <th>Action</th>
+        </thead>
+        <tbody>
+          @foreach($allplans as $plan)
+          <tr>
+            <td>{{ $plan->name }} ( {{ $plan->currency }} {{ $plan->amount / 100 }} / {{ $plan->interval }} )</td>
+            <td>
+              <div class="checkbox">
+                  @if( !in_array( $plan->name, $subscribed_plan_names ) )
+                  <div id="ck-button">
+                     <label>
+                        <input type="checkbox" name="plan[]" value="{{ $plan->id }}" hidden><span>Select</span>
+                     </label>
+                  </div>
+                  @else
+                  <div class="btn btn-default disabled">Subscribed</div>
+                  @endif
+              </div>
 
-        @foreach($allplans as $plan)
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="plan[]" value="{{ $plan->id }}"> {{ $plan->name }} ( {{ $plan->currency }} {{ $plan->amount / 100 }} / {{ $plan->interval }} )
-            </label>
-          </div>
-        @endforeach
+            </td>
+          </tr>
+
+          @endforeach
+
+        </tbody>
+      </table>
+
 
 
         <!--
@@ -87,6 +154,20 @@
   </div>
 </div>
 
+@endsection
 
+@section('scripts')
+<script>
+function yesno(thecheckbox, thelabel) {
 
+    var checkboxvar = document.getElementById(thecheckbox);
+    var labelvar = document.getElementById(thelabel);
+    if (!checkboxvar.checked) {
+        labelvar.innerHTML = "No";
+    }
+    else {
+        labelvar.innerHTML = "Yes";
+    }
+}
+</script>
 @endsection
